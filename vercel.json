@@ -2,7 +2,9 @@
   "builds": [
     { "src": "package.json", "use": "@vercel/static-build" }
   ],
+  "outputDirectory": "dist",
   "routes": [
-    { "src": "/(.*)", "dest": "/" }
+    { "src": "/assets/(.*)", "dest": "/assets/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
