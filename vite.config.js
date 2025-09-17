@@ -7,4 +7,6 @@ export default defineConfig({
   server: {
     port: 5174,  // local dev only
   },
+  base: './', // 👈 important for Vercel/Netlify
 })
+
