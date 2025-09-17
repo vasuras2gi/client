@@ -40,7 +40,7 @@ const App = () => {
     })
 
     socket.on("receive-message",(data)=>{
-      console.log(data);
+      console.log(data,socket.id);
       setMymessages((mymessages) => [...mymessages, data]);
     })
 
