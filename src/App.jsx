@@ -1,97 +1,127 @@
-import React from 'react'
-import { useEffect } from 'react'
-import {io} from "socket.io-client"
-import {Button, Container, Stack, TextField, Typography} from '@mui/material'
-import { useState } from 'react'
-import { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from "react";
+import { io } from "socket.io-client";
 
 const App = () => {
-  const socket = useMemo(()=> io('https://server-v06f.onrender.com',{
-    withCredentials:true,
-  }) ,[]);
+  const socket = useMemo(
+    () =>
+      io("https://server-v06f.onrender.com", {
+        withCredentials: true,
+      }),
+    []
+  );
+
   const [message, setMessage] = useState("");
   const [room, setRoom] = useState("");
   const [roomName, setRoomName] = useState("");
   const [socketId, setSocketId] = useState("");
   const [mymessages, setMymessages] = useState([]);
 
-  console.log(mymessages);
-
-  const handleSubmit = (e)=>{
+  const handleSubmit = (e) => {
     e.preventDefault();
-    socket.emit("message",{message, room});
+    if (!message || !room) return;
+    socket.emit("message", { message, room });
     setMessage("");
-  }
+  };
 
-  const JoinRoomHandler = (e)=>{
-      e.preventDefault();
-      socket.emit("join-room",roomName);
-      setRoomName("")
-  }
+  const JoinRoomHandler = (e) => {
+    e.preventDefault();
+    if (!roomName) return;
+    socket.emit("join-room", roomName);
+    setRoomName("");
+  };
 
-  useEffect(( ) => {
-    socket.on("connect",( ) => {
+  useEffect(() => {
+    socket.on("connect", () => {
       setSocketId(socket.id);
-      console.log("connected",socket.id);
+      console.log("connected", socket.id);
     });
 
-    socket.on("welcome",(s)=>{
+    socket.on("welcome", (s) => {
       console.log(s);
-    })
+    });
 
-    socket.on("receive-message",(data)=>{
-      console.log(data,socket.id);
+    socket.on("receive-message", (data) => {
+      console.log(data, socket.id);
       setMymessages((mymessages) => [...mymessages, data]);
-    })
+    });
 
-
-    return()=>{
+    return () => {
       socket.disconnect();
-    }
-
-  },[]);
+    };
+  }, [socket]);
 
   return (
-    <Container maxWidth='sm'>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-6">
+      {/* Socket ID */}
+      <h1 className="text-2xl font-bold mb-6">
+        Connected as: <span className="text-green-400">{socketId}</span>
+      </h1>
 
-      <Typography variant='h1' component='div' gutterBottom>
-        {socketId}
-      </Typography>
-
-      <form onSubmit={JoinRoomHandler}>
-        <h5>join room</h5>
-        <TextField value={roomName}
-         onChange={(e)=>setRoomName(e.target.value)}
-         id='outlined-basic' label='Room' variant='outlined'/>
-
-        <Button type='submit' variant='contained' color='primary'>Join</Button>
+      {/* Join Room Form */}
+      <form
+        onSubmit={JoinRoomHandler}
+        className="flex gap-2 mb-6 w-full max-w-md"
+      >
+        <input
+          type="text"
+          value={roomName}
+          onChange={(e) => setRoomName(e.target.value)}
+          placeholder="Enter room name"
+          className="flex-1 p-2 rounded bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <button
+          type="submit"
+          className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded text-white font-semibold"
+        >
+          Join
+        </button>
       </form>
 
-      <form onSubmit={handleSubmit}>
-
-        <TextField value={message}
-         onChange={(e)=>setMessage(e.target.value)}
-         id='outlined-basic' label='message' variant='outlined'/>
-
-        <TextField value={room}
-         onChange={(e)=>setRoom(e.target.value)}
-         id='outlined-basic' label='userId/roomname' variant='outlined'/>
-
-
-        <Button type='submit' variant='contained' color='primary'>Send</Button>
+      {/* Send Message Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="flex gap-2 mb-6 w-full max-w-md"
+      >
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Enter message"
+          className="flex-1 p-2 rounded bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <input
+          type="text"
+          value={room}
+          onChange={(e) => setRoom(e.target.value)}
+          placeholder="Room/User ID"
+          className="flex-1 p-2 rounded bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+        <button
+          type="submit"
+          className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded text-white font-semibold"
+        >
+          Send
+        </button>
       </form>
 
-      <Stack>
-        {
-          mymessages.map((m, i)=>(
-            <Typography key={i} variant='h6' component='div' gutterBottom>
+      {/* Messages */}
+      <div className="w-full max-w-md bg-gray-800 rounded p-4 overflow-y-auto max-h-80">
+        <h2 className="text-lg font-semibold mb-2">Messages</h2>
+        {mymessages.length === 0 ? (
+          <p className="text-gray-400">No messages yet...</p>
+        ) : (
+          mymessages.map((m, i) => (
+            <div
+              key={i}
+              className="p-2 my-1 bg-gray-700 rounded-lg text-sm text-gray-100"
+            >
               {m}
-            </Typography>
+            </div>
           ))
-        }
-      </Stack>  
-    </Container>
-  )
-}
+        )}
+      </div>
+    </div>
+  );
+};
 
-export default App
+export default App;
