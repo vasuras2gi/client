@@ -113,13 +113,23 @@ const App = () => {
           mymessages.map((m, i) => (
             <div
               key={i}
-              className="p-2 my-1 bg-gray-700 rounded-lg text-sm text-gray-100"
+              className={`p-2 my-1 rounded-lg text-sm ${
+                m.sender === socketId
+                  ? "bg-blue-600 text-white text-right"
+                  : "bg-gray-700 text-gray-100 text-left"
+              }`}
             >
-              {m}
+              {/* Show sender ID or "You" */}
+              <p className="text-xs text-gray-300 mb-1">
+                {m.sender === socketId ? "You" : m.sender}
+              </p>
+              {/* Show the actual message */}
+              <p>{m.message}</p>
             </div>
           ))
         )}
       </div>
+
     </div>
   );
 };
