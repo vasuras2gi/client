@@ -53,7 +53,7 @@ const App = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white px-4 py-6">
       {/* Header */}
       <h1 className="text-xl sm:text-2xl font-bold mb-4 text-center">
-        Welcome To <span className="text-green-400">Vasu Rastogi</span> Chat
+        Welcome To <span className="text-green-400">Vasu Rastogi</span> Chat Proto-type🐧 
       </h1>
 
       {/* Connected ID */}
